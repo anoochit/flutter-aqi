@@ -44,33 +44,118 @@ class _HomePageState extends State<HomePage> {
     if ((aqi >= 301)) return Colors.brown;
   }
 
+  Widget cardBox(IconData icon, String title, String unit, String value) {
+    return Card(
+        child: Container(
+            width: ((MediaQuery.of(context).size.width - 18) - 18) / 3.03,
+            padding: const EdgeInsets.all(8),
+            child: (value != null)
+                ? Column(children: <Widget>[
+                    Align(
+                        alignment: Alignment.topLeft,
+                        child: Row(children: <Widget>[
+                          Icon(icon),
+                          SizedBox(width: 8),
+                          Text(title)
+                        ])),
+                    Container(
+                      alignment: Alignment.center,
+                      padding: EdgeInsets.all(8),
+                      child: Text(
+                        value,
+                        style: TextStyle(
+                            fontSize: 32, fontWeight: FontWeight.w500),
+                      ),
+                    )
+                  ])
+                : Column(children: <Widget>[
+                    Align(
+                        alignment: Alignment.topLeft,
+                        child: Row(children: <Widget>[
+                          Icon(icon),
+                          SizedBox(width: 8),
+                          Text(title)
+                        ])),
+                    Container(
+                      alignment: Alignment.center,
+                      padding: EdgeInsets.all(8),
+                      child: CircularProgressIndicator(),
+                    )
+                  ])));
+  }
+
+  Widget cardBigBox(IconData icon, String title, String unit, String value) {
+    return Card(
+        child: Container(
+            width: MediaQuery.of(context).size.width,
+            height: 220,
+            padding: const EdgeInsets.all(8),
+            child: (value != null)
+                ? Column(children: <Widget>[
+                    Align(
+                        alignment: Alignment.topLeft,
+                        child: Row(children: <Widget>[
+                          Icon(icon),
+                          SizedBox(width: 8),
+                          Text(
+                            title,
+                          )
+                        ])),
+                    Container(
+                      alignment: Alignment.center,
+                      padding: EdgeInsets.all(8),
+                      child: Text(
+                        value,
+                        style: TextStyle(
+                            fontSize: 120, fontWeight: FontWeight.w500),
+                      ),
+                    )
+                  ])
+                : Column(children: <Widget>[
+                    Align(
+                        alignment: Alignment.topLeft,
+                        child: Row(children: <Widget>[
+                          Icon(icon),
+                          SizedBox(width: 8),
+                          Text(title)
+                        ])),
+                    Container(
+                      alignment: Alignment.center,
+                      padding: EdgeInsets.all(8),
+                      child: CircularProgressIndicator(),
+                    )
+                  ])));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: Container(
-          padding: EdgeInsets.all(16),
-          child: Stack(
-            children: <Widget>[
-              Center(
-                child: FutureBuilder<AQIModel>(
-                  future: aqiData,
-                  builder: (BuildContext context, AsyncSnapshot snapshot) {
-                    if (snapshot.hasData) {
-                      // set color
-                      return Text(snapshot.data.aQI.toString(),
-                          style: TextStyle(
-                              color: setColor(snapshot.data.aQI),
-                              fontSize: 160,
-                              fontWeight: FontWeight.w800));
-                    } else if (snapshot.hasError) {
-                      return Text("${snapshot.error}");
-                    }
-                    return CircularProgressIndicator();
-                  },
-                ),
-              ),
-            ],
+          padding: const EdgeInsets.all(8.0),
+          alignment: Alignment.center,
+          width: MediaQuery.of(context).size.width,
+          child: FutureBuilder<AQIModel>(
+            future: aqiData,
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.hasData) {
+                return Wrap(
+                  children: <Widget>[
+                    cardBigBox(Icons.insert_chart, "AQI", "",
+                        snapshot.data.aQI.toString()),
+                    cardBox(Icons.insert_chart, "PM1", "",
+                        snapshot.data.pM1.toString()),
+                    cardBox(Icons.insert_chart, "PM2.5", "",
+                        snapshot.data.pM25.toString()),
+                    cardBox(Icons.insert_chart, "PM10", "",
+                        snapshot.data.pM10.toString()),
+                  ],
+                );
+              } else if (snapshot.hasError) {
+                return Text("${snapshot.error}");
+              }
+              return Container();
+            },
           ),
         ),
       ),
